@@ -39,6 +39,17 @@ public class CourseService {
         return null; // Or throw an exception
     }
 
+    public Course updateCourseDescription(int id, String description) {
+        Optional<Course> optionalCourse = coursesRepository.findById(id);
+        if (optionalCourse.isPresent()) {
+            Course existingCourse = optionalCourse.get();
+            existingCourse.setCourseDescription(description);
+            return coursesRepository.save(existingCourse);
+        }
+        return null;
+    }
+
+
     public void deleteCourse(int id) {
         coursesRepository.deleteById(id);
     }

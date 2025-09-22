@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Course API", description = "Operations related to courses")
 @CrossOrigin(origins = "*")
@@ -68,4 +69,20 @@ public class CourseController {
         courseService.deleteCourse(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/description")
+    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('TEACHER') and @courseSecurity.isCourseOwnedBy(#id, principal))")
+    public ResponseEntity<Course> updateCourseDescription(@PathVariable int id, @RequestBody Map<String, String> body) {
+        String description = body.get("courseDescription");
+        if (description == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Course updated = courseService.updateCourseDescription(id, description);
+        if (updated != null) {
+            return ResponseEntity.ok(updated);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
